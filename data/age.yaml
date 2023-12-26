@@ -11,7 +11,7 @@
 path: ./data/age  # dataset root dir
 train: images/train  # train images (relative to 'path') 128 images
 val: images/train  # val images (relative to 'path') 128 images
-test: images/test # test images (optional)
+test: images/test_filtered # test images (optional)
 
 # Classes
 names:

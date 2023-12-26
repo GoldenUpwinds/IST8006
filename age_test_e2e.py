@@ -90,7 +90,7 @@ def evaluate(model, image_folder, label_folder, criterion):
 
 
 # 设置数据路径
-val_image_folder = os.path.join(ROOT, 'data', 'age', 'images', 'test_filtered')
+val_image_folder = os.path.join(ROOT, 'data', 'age', 'crop_images_filtered', 'test')
 val_label_folder = os.path.join(ROOT, 'data', 'age', 'crop_labels_filtered', 'test')
 
 # 初始化网络和损失函数

@@ -4,7 +4,7 @@ from tqdm import tqdm
 from sklearn.metrics import mean_absolute_error
 from torchvision import transforms
 from PIL import Image
-from agemodels import AgeNet as Net  # Assuming your AgeNet model is in agemodels module
+from agemodels import AgeNet_gray as Net  # Assuming your AgeNet model is in agemodels module
 import os
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -36,7 +36,8 @@ def evaluate(model, image_folder, label_folder, criterion):
         label_path = os.path.join(label_folder, label_files[i])
 
         # 读取图像和标签
-        image = Image.open(image_path).convert('RGB')
+        image = Image.open(image_path).convert('L')
+        label_value = int(open(label_path).read().strip())
         label = torch.tensor(int(open(label_path).read().strip()), dtype=torch.float32).unsqueeze(0)
 
         # 数据预处理
@@ -64,6 +65,7 @@ def evaluate(model, image_folder, label_folder, criterion):
         # 存储图像名称和对应的预测结果
         result_entry = {
             "image_name": image_files[i],
+            "label": label_value,
             "prediction": prediction_value
         }
         results.append(result_entry)
@@ -78,8 +80,6 @@ def evaluate(model, image_folder, label_folder, criterion):
             count_5 += 1
         if absolute_error < 10:
             count_10 += 1
-
-    print(predictions)
 
     avg_loss = total_loss / len(image_files)
     mae = mean_absolute_error(ground_truth, predictions)
@@ -96,8 +96,13 @@ def evaluate(model, image_folder, label_folder, criterion):
     print(f"比例（误差 < 1.5）: {ratio_15:.2%}")
     print(f"比例（误差 < 5）: {ratio_5:.2%}")
     print(f"比例（误差 < 10）: {ratio_10:.2%}")
-    for result_entry in results:
-        print(f"Image: {result_entry['image_name']}, Prediction: {result_entry['prediction']}")
+    # 输出误差大于10的结果
+    # print("Results with Error > 10:")
+    # for result_entry in results:
+        # error = abs(result_entry["label"] - result_entry["prediction"])
+        # if error > 10:
+            # print(
+            #     f"Image: {result_entry['image_name']}, Label: {result_entry['label']}, Prediction: {result_entry['prediction']}, Error: {error}")
 
 
 # 设置数据路径
@@ -109,7 +114,8 @@ model = Net()
 criterion = nn.L1Loss()
 
 # 加载之前保存的最佳模型参数
-model.load_state_dict(torch.load(os.path.join(ROOT, 'data', 'age', 'output_agenet', 'best_model.pth')))
+model.load_state_dict(
+    torch.load(os.path.join(ROOT, 'data', 'age', 'output_agenet_gray', 'saved_models', 'model_epoch_1000.pth')))
 
 # 评估模型
 evaluate(model, val_image_folder, val_label_folder, criterion)
