@@ -1,5 +1,8 @@
 import cv2
 import json
+import os
+
+ROOT = os.path.dirname(os.path.abspath(__file__))
 
 
 def get_image_size(image_path):
@@ -19,7 +22,7 @@ def json_to_yolo(json_data):
         bbox = entry["bbox"]
 
         # Read image dimensions
-        image_path = f"/home/user/Documents/Project/yolov5/data/age/images/test/{image_name}"  # Update this path based on your image location
+        image_path = os.path.join(ROOT, "data", "age", "images", "test", image_name)
         image_width, image_height = get_image_size(image_path)
 
         # Convert bbox to YOLO format
